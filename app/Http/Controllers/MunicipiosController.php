@@ -70,7 +70,7 @@ class MunicipiosController extends Controller
         }
     }
 
-    private function fetchFromBrasilAPI($uf)
+    public function fetchFromBrasilAPI($uf)
     {
         try {
             // Requisição à API BrasilAPI para obter os municípios
@@ -85,7 +85,7 @@ class MunicipiosController extends Controller
 
             return array_map(fn ($item) => [
                 'name' => $item['nome'],
-                'ibge_code' => $item['id'],
+                'ibge_code' => $item['codigo_ibge'],
             ], $municipios);
 
         }
