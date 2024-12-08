@@ -28,6 +28,7 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    'municipios_provider' => env('MUNICIPIOS_PROVIDER', 'brasilapi'),
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
