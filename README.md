@@ -58,3 +58,5 @@ A API é responsável por fornecer os dados dos municípios com base no estado s
        "total": 100,
        "total_pages": 10
    }
+
+3. **A aplicação está rodando no servidor AWS no seguinte endereço: http://54.210.233.243:8080/municipios**
