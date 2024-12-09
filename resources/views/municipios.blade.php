@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Municipios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+
 </head>
 <body>
+<style>
+    .select2-container .select2-selection--single {
+        height: 30px;
+    }
+</style>
 <div class="container mt-5">
     <h1>Listagem de municípios</h1>
 
@@ -15,13 +23,13 @@
     <p id="totalMunicipios"></p>
 
     <!-- Select para os estados -->
-    <select id="ufSelect" class="form-select mb-4" onchange="loadMunicipios(1)">
+    <select id="ufSelect" class="form-select mb-6" onchange="loadMunicipios(1)">
         <option value="">Selecione um Estado</option>
         <!-- Os estados serão carregados aqui  -->
     </select>
 
     <!-- Tabela de municípios -->
-    <div id="municipios" class="row"></div>
+    <div id="municipios" class="row mt-5"></div>
 
     <!-- Paginação -->
     <nav id="pagination" class="mt-4" aria-label="Page navigation example">
@@ -99,50 +107,91 @@
                 // Exibir paginação
                 if (response.total_pages > 1) {
                     const pagination = $('<ul class="pagination justify-content-center"></ul>');
+                    const maxPagesToShow = 5; // Número máximo de botões de página para exibir
+                    let startPage = Math.max(1, page - Math.floor(maxPagesToShow / 2));
+                    let endPage = Math.min(response.total_pages, startPage + maxPagesToShow - 1);
+
+                    // Ajusta o início se a contagem de páginas for menor que o limite
+                    if (endPage - startPage < maxPagesToShow - 1) {
+                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                    }
 
                     // Botão de "Página anterior"
                     if (page > 1) {
                         pagination.append(`
-                            <li class="page-item">
-                                <button class="page-link" onclick="loadMunicipios(${page - 1})">Anterior</button>
-                            </li>
-                        `);
+                        <li class="page-item">
+                            <button class="page-link" onclick="loadMunicipios(${page - 1})">Anterior</button>
+                        </li>
+                    `);
                     } else {
                         pagination.append(`
-                            <li class="page-item disabled">
-                                <button class="page-link">Anterior</button>
-                            </li>
-                        `);
+                        <li class="page-item disabled">
+                            <button class="page-link">Anterior</button>
+                        </li>
+                    `);
                     }
 
-                    // Botões de páginas
-                    for (let i = 1; i <= response.total_pages; i++) {
-                        const activeClass = (i === page) ? 'active' : '';
+                    // Botão de primeira página
+                    if (startPage > 1) {
                         pagination.append(`
-                            <li class="page-item ${activeClass}">
-                                <button class="page-link" onclick="loadMunicipios(${i})">${i}</button>
+                        <li class="page-item">
+                            <button class="page-link" onclick="loadMunicipios(1)">1</button>
+                        </li>
+                    `);
+                        if (startPage > 2) {
+                            pagination.append(`
+                            <li class="page-item disabled">
+                                <button class="page-link">...</button>
                             </li>
                         `);
+                        }
+                    }
+
+                    // Botões de páginas dinâmicos
+                    for (let i = startPage; i <= endPage; i++) {
+                        const activeClass = (i === page) ? 'active' : '';
+                        pagination.append(`
+                        <li class="page-item ${activeClass}">
+                            <button class="page-link" onclick="loadMunicipios(${i})">${i}</button>
+                        </li>
+        `);
+                    }
+
+                    // Botão de última página
+                    if (endPage < response.total_pages) {
+                        if (endPage < response.total_pages - 1) {
+                            pagination.append(`
+                            <li class="page-item disabled">
+                                <button class="page-link">...</button>
+                            </li>
+            `);
+                        }
+                        pagination.append(`
+                        <li class="page-item">
+                            <button class="page-link" onclick="loadMunicipios(${response.total_pages})">${response.total_pages}</button>
+                        </li>
+        `);
                     }
 
                     // Botão de "Próxima página"
                     if (page < response.total_pages) {
                         pagination.append(`
-                            <li class="page-item">
-                                <button class="page-link" onclick="loadMunicipios(${page + 1})">Próxima</button>
-                            </li>
-                        `);
+                        <li class="page-item">
+                            <button class="page-link" onclick="loadMunicipios(${page + 1})">Próxima</button>
+                        </li>
+        `);
                     } else {
                         pagination.append(`
-                            <li class="page-item disabled">
-                                <button class="page-link">Próxima</button>
-                            </li>
-                        `);
+                        <li class="page-item disabled">
+                            <button class="page-link">Próxima</button>
+                        </li>
+        `);
                     }
 
                     // Adiciona a paginação
                     paginationContainer.append(pagination);
                 }
+
             },
             error: function(error) {
                 console.error('Erro ao carregar municípios:', error);
@@ -154,6 +203,7 @@
 
     $(document).ready(function() {
         loadEstados();
+        $('#ufSelect').select2();
     });
 </script>
 </body>
