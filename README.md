@@ -59,4 +59,4 @@ A API é responsável por fornecer os dados dos municípios com base no estado s
        "total_pages": 10
    }
 
-3. **A aplicação está rodando no servidor AWS no seguinte endereço: http://54.210.233.243:8080/municipios**
+3. **A aplicação está rodando no servidor AWS no seguinte endereço: http://ec2-54-210-233-243.compute-1.amazonaws.com:8080/municipios**
